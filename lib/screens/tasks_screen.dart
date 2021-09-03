@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:todoey_flutter/main.dart';
 import 'package:todoey_flutter/models/task.dart';
 import 'package:todoey_flutter/screens/add_task_screen.dart';
 import 'package:todoey_flutter/widgets/tasks_list.dart';
+import 'package:provider/provider.dart';
 
 class TasksScreen extends StatefulWidget {
   @override
@@ -9,17 +11,18 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  List<Task> tasksList = [];
+  // List<Task> tasksList = [];
 
-  void addTask(String taskName) {
-    setState(() {
-      tasksList.add(Task(name: taskName));
-    });
-    Navigator.pop(context);
-  }
+  // void addTask(String taskName) {
+  //   setState(() {
+  //     tasksList.add(Task(name: taskName));
+  //   });
+  //   Navigator.pop(context);
+  // }
 
   @override
   Widget build(BuildContext context) {
+    var tasksList = context.read<MyTaskList>().tasksList;
     return Scaffold(
       backgroundColor: Colors.lightBlueAccent,
       floatingActionButton: Padding(
@@ -28,9 +31,12 @@ class _TasksScreenState extends State<TasksScreen> {
           onPressed: () {
             showModalBottomSheet(
               context: context,
-              builder: (context) => AddTaskScreen(
-                addNewTask: addTask,
-              ),
+              builder: (context) => AddTaskScreen(addNewTask: (newTask) {
+                setState(() {
+                  tasksList.add(Task(name: newTask));
+                });
+                Navigator.pop(context);
+              }),
             );
           },
           backgroundColor: Colors.lightBlueAccent,
@@ -68,6 +74,7 @@ class _TasksScreenState extends State<TasksScreen> {
                 ),
                 Text(
                   '${tasksList.length} tasks',
+                  // '${tasksList.length} tasks',
                   style: TextStyle(color: Colors.white, fontSize: 18.0),
                 ),
               ],
@@ -77,7 +84,7 @@ class _TasksScreenState extends State<TasksScreen> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 20.0),
               height: 300.0,
-              child: TasksList(tasksList: tasksList),
+              child: TasksList(),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
